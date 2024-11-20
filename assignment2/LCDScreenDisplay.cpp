@@ -22,6 +22,10 @@ LCD has to display:
 
 LiquidCrystal_I2C lcd(0x27, 16, 2);
 
+String pressOpenMsg = "PRESS OPEN TO ENTER WASTE";
+String pressCloseMsg = "PRESS CLOSE WHEN DONE";
+String wasteReceivedMsg = "WASTE RECEIVED";
+String containerFullMsg = "CONTAINER IS FULL";
 
 void LCDInit(){
   lcd.init();

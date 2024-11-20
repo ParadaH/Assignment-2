@@ -5,7 +5,10 @@
 // String pressCloseMsg = "PRESS CLOSE WHEN DONE";
 // String wasteReceivedMsg = "WASTE RECEIVED";
 
-
+extern String pressOpenMsg;
+extern String pressCloseMsg;
+extern String wasteReceivedMsg;
+extern String containerFullMsg;
 
 void LCDInit();
 void LCDupdate(String message);

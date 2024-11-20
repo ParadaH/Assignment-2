@@ -1,30 +1,43 @@
 #include "LCDScreenDisplay.h"
 #include "LEDLights.h"
-
-String pressOpenMsg = "PRESS OPEN TO ENTER WASTE";
-String pressCloseMsg = "PRESS CLOSE WHEN DONE";
-String wasteReceivedMsg = "WASTE RECEIVED";
-
-enum {EMPTY, FULL, OPEN, CLOSE, ALARM, SLEEP} state;
+#include "ContainerCore.h"
+#include "PinConfig.h"
 
 
 void setup() {
   Serial.begin(9600);
   LCDInit();
-  state = EMPTY;
+  PinInit();
+  container_state = FULL;
 }
 
 void loop() {
+
+  int pot = analogRead(0);
+  int resPot = map(pot, 0, 1023, 0, 100);
+  
+  Serial.println(resPot);
+
+  if (Serial.available() > 0) {
+
+    String received = Serial.readStringUntil('\n');
+    int receivedState = received.toInt();
+    
+    container_state = receivedState;
+  }
+  delay(100);
+
   step();
 }
 
 void step(){
-  switch (state){
+  switch (container_state){
     case EMPTY:
       LCDupdate(pressOpenMsg);
       break;
 
     case FULL:
+      LCDupdate(containerFullMsg);
       break;
 
     case OPEN:
