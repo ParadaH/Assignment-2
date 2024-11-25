@@ -1,23 +1,5 @@
-/* NOTES
-
-LCD has to display:
-  # State: Open
-  - PRESS CLOSE WHEN DONE
-  - WASTE RECEIVED
-
-  # State: Empty
-  - PRESS OPEN TO ENTER WASTE
-
-  # State: Full
-  - CONTAINER FULL
-
-  # State: Alarm
-  - PROBLEM DETECTED
-
-*/
-
 #include "Arduino.h"
-#include "LCDScreenDisplay.h"
+#include "LCD_screen_display.h"
 #include <LiquidCrystal_I2C.h>
 
 LiquidCrystal_I2C lcd(0x27, 16, 2);
@@ -26,6 +8,7 @@ String pressOpenMsg = "PRESS OPEN TO ENTER WASTE";
 String pressCloseMsg = "PRESS CLOSE WHEN DONE";
 String wasteReceivedMsg = "WASTE RECEIVED";
 String containerFullMsg = "CONTAINER IS FULL";
+String containerAlarm = "PROBLEM DETECTED";
 
 void LCDInit(){
   lcd.init();
@@ -36,6 +19,7 @@ void LCDupdate(String message){
   String line1, line2;
   checkMessageLength(message, line1, line2);
 
+  lcd.clear();
   lcd.setCursor(0, 0);
   lcd.print(line1);
   lcd.setCursor(0, 1);

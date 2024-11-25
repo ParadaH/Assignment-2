@@ -1,8 +1,10 @@
-#include "LCDScreenDisplay.h"
-#include "LEDLights.h"
-#include "ContainerCore.h"
-#include "PinConfig.h"
+#include "LCD_screen_display.h"
+#include "LED_lights.h"
+#include "container_core.h"
+#include "pin_config.h"
 
+/* Temporary global variable */
+int resPot = 0;
 
 void setup() {
   Serial.begin(9600);
@@ -14,15 +16,11 @@ void setup() {
 void loop() {
 
   int pot = analogRead(0);
-  int resPot = map(pot, 0, 1023, 0, 100);
+  resPot = map(pot, 0, 1023, 0, 100);
   
-  Serial.println(resPot);
-
   if (Serial.available() > 0) {
-
     String received = Serial.readStringUntil('\n');
     int receivedState = received.toInt();
-    
     container_state = receivedState;
   }
   delay(100);
@@ -31,13 +29,22 @@ void loop() {
 }
 
 void step(){
+
   switch (container_state){
     case EMPTY:
+      /* Here we should empty the storage level */
+      resPot = 0;
       LCDupdate(pressOpenMsg);
       break;
 
     case FULL:
       LCDupdate(containerFullMsg);
+      sendData(resPot);
+
+      if (resPot > 95) {
+        sendData(101);
+        container_state = ALARM;
+      }
       break;
 
     case OPEN:
@@ -47,9 +54,14 @@ void step(){
       break;
 
     case ALARM:
+      LCDupdate(containerAlarm);
       break;
 
     case SLEEP:
       break;
   }
+}
+
+void sendData(int message){
+  Serial.println(message);
 }
