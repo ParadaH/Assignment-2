@@ -10,5 +10,7 @@ extern String containerAlarm;
 void LCDInit();
 void LCDupdate(String message);
 void checkMessageLength(const String &input, String &line1, String &line2);
+void LCDTurnOff();
+void LCDTurnOn();
 
 #endif
