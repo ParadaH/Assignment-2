@@ -2,8 +2,8 @@
 #include "LCD_screen_display.h"
 #include <LiquidCrystal_I2C.h>
 
-LiquidCrystal_I2C lcd(0x27, 16, 2);
-// LiquidCrystal_I2C lcd(0x3F, 16, 2);
+// LiquidCrystal_I2C lcd(0x27, 16, 2); //Hubert's board
+LiquidCrystal_I2C lcd(0x3F, 16, 2); //Vincent's board
 
 String pressOpenMsg = "PRESS OPEN TO ENTER WASTE";
 String pressCloseMsg = "PRESS CLOSE WHEN DONE";

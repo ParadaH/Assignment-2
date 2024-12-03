@@ -12,19 +12,19 @@
 #define SERVO_PIN 4
 #define CALIBRATION_TIME 3  //sec
 #define EMPTY_BTN 5
-#define TMP36_PIN A2
+#define TMP36_PIN A0
 
 #define RED_PIN 11
 #define GREEN_PIN 10
-#define OPEN_BTN 12
-#define CLOSE_BTN 13
+#define OPEN_BTN 13
+#define CLOSE_BTN 12
 
 #define T3 15000                 // 15 seconds -> before standby (SLEEP MODE)
 #define T2 4000                  // 4 seconds -> Timer for the opening counter (OPEN)
 #define STANDBY_TIMEOUT_MS 5000  // 3 seconds -> for the empty routine (EMPTY)
 
 #define THRESHOLD_MAXWASTE 0.3
-#define TEMP_THRESHOLD 30
+#define TEMP_THRESHOLD 20
 
 //Objects
 Sonar* wasteDetector;
@@ -77,8 +77,8 @@ void setup() {
 void loop() {
 
   float temperature = readTemperature();
+  // Serial.println(temperature);
 
-  // Controlla se deve entrare in stato di allarme
   if (temperature > TEMP_THRESHOLD && state != ALARM) {
     state = ALARM;
     LCDupdate(containerAlarm);
@@ -101,6 +101,7 @@ void loop() {
         alarm_flag = 0;
         if (idle_flag == 0) {
           log(state);
+          LCDupdate(pressOpenMsg);
           greenL->switchOn();
           idle_flag = 1;
         }
@@ -115,7 +116,6 @@ void loop() {
           LCDupdate(pressCloseMsg);
         }
         if (millis() - lastMotionTime > T3) {
-          Serial.println("Standby...");
           state = SLEEP;
         }
         break;
@@ -133,8 +133,8 @@ void loop() {
     case CLOSE:
       {
 
-        bool pressedClose = digitalRead(CLOSE_BTN);
-        if (pressedClose || millis() - openTimer >= T2) {
+        bool isClosedButtonPressed = digitalRead(CLOSE_BTN);
+        if (isClosedButtonPressed || millis() - openTimer >= T2) {
           log(state);
           door->close();
           LCDupdate(wasteReceivedMsg);
@@ -228,7 +228,7 @@ void loop() {
       }
 
     case SLEEP:
-      Serial.println("Going in standby");
+      log(state);
       goingToSleep();
       returnToIdle();
       resetMotionTimer();
@@ -241,9 +241,9 @@ void loop() {
 }
 
 float readTemperature() {
-  int sensorValue = analogRead(TMP36_PIN);     // Lettura del valore analogico
-  float voltage = (sensorValue / 1024) * 5.0;  // Converti in tensione
-  return (voltage - .5) * 100.0;               // Converti in temperatura °C
+  int sensorValue = analogRead(TMP36_PIN);
+  float voltage = (sensorValue / 1024) * 5.0;
+  return (voltage - .5) * 100.0;
 }
 
 void wakeUp() {}
@@ -268,6 +268,7 @@ void goingToSleep() {
   sleep_disable();
   delay(100);  //debounce
   LCDTurnOn();
+  LCDupdate(pressOpenMsg);
   detachInterrupt(digitalPinToInterrupt(PIR_PIN));
 }
 
